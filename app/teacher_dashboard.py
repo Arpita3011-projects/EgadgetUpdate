@@ -15,12 +15,15 @@ Run:
 """
 
 # ── stdlib & third-party ──────────────────────────────────────────────────────
-import os, sys, io, datetime, textwrap
+import os, sys, io, datetime, textwrap, re, tempfile
+from typing import Any, List, Tuple
+
 import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import seaborn as sns
 import streamlit as st
 
 # ── path wiring ───────────────────────────────────────────────────────────────
@@ -34,6 +37,11 @@ from batch_predictor        import predict_from_dataframe, read_uploaded_file, \
 from batch_report_generator import generate_class_report, generate_student_cards
 from form_column_mapper     import MODEL_FEATURES, DEFAULT_MAP
 from recommendation         import get_recommendations, get_alert_message
+from shap_explainer         import explain_single, get_tree_explainer, plot_waterfall
+from logging_config         import get_logger, setup_logging
+
+setup_logging()
+logger = get_logger('teacher_dashboard')
 
 # ── constants ─────────────────────────────────────────────────────────────────
 CLASS_NAMES = ['Low', 'Moderate', 'High', 'Severe']
@@ -42,6 +50,18 @@ RISK_EMOJI  = {'Low':'🟢','Moderate':'🟡','High':'🟠','Severe':'🔴'}
 REPORTS_DIR = os.path.join(ROOT_DIR, 'reports')
 DATA_DIR    = os.path.join(ROOT_DIR, 'data')
 SAMPLE_CSV  = os.path.join(DATA_DIR, 'sample_google_form_responses.csv')
+
+RISK_ROW_COLORS = {
+    'Low': 'background-color:#c8f7c5',
+    'Moderate': 'background-color:#fff3cd',
+    'High': 'background-color:#ffd6a5',
+    'Severe': 'background-color:#ffcdd2',
+}
+
+
+def _highlight_risk_row(row: pd.Series) -> List[str]:
+    color = RISK_ROW_COLORS.get(row.get('predicted_risk', ''), '')
+    return [color] * len(row)
 
 # ── page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -88,11 +108,23 @@ for key, default in [
         st.session_state[key] = default
 
 # ── model availability check ──────────────────────────────────────────────────
+@st.cache_resource
+def _load_model_artifacts() -> Tuple[Any, Any, List[str]]:
+    return load_artifacts(os.path.join(ROOT_DIR, 'models'))
+
+
+@st.cache_resource
+def _load_shap_explainer(_model: Any) -> Any:
+    return get_tree_explainer(_model)
+
+
 try:
-    load_artifacts(os.path.join(ROOT_DIR, 'models'))
+    _model, _scaler, _feature_names = _load_model_artifacts()
+    _shap_explainer = _load_shap_explainer(_model)
     MODEL_READY = True
 except Exception as _me:
     MODEL_READY = False
+    logger.error('Model not ready: %s', _me)
 
 # ══════════════════════════════════════════════════════════════════════════════
 #  SIDEBAR
@@ -116,7 +148,7 @@ with st.sidebar:
         "📥 Download Reports",
         "📝 Google Form Builder",
     ]
-    page = st.radio("", PAGES, label_visibility="collapsed")
+    page = st.radio("Navigation", PAGES, label_visibility="collapsed")
 
     st.markdown("---")
     if st.session_state.results is not None:
@@ -214,7 +246,7 @@ elif page == "📤 Upload & Predict":
     with tab_sample:
         st.markdown("#### Try with a built-in 40-student sample (mimics Google Form output)")
         if os.path.exists(SAMPLE_CSV):
-            if st.button("📂 Load Sample File", use_container_width=True):
+            if st.button("📂 Load Sample File", width='stretch'):
                 raw_df   = pd.read_csv(SAMPLE_CSV)
                 filename = "sample_google_form_responses.csv"
                 st.success(f"✅ Sample file loaded — {len(raw_df)} students")
@@ -261,6 +293,7 @@ elif page == "📤 Upload & Predict":
         if run:
             with st.spinner(f"Running predictions for {len(raw_df)} students…"):
                 try:
+                    logger.info('Batch prediction started for %d rows', len(raw_df))
                     out = predict_from_dataframe(raw_df)
                     st.session_state.results  = out['results_df']
                     st.session_state.summary  = out['summary']
@@ -400,6 +433,110 @@ elif page == "📊 Class Analytics":
 
         st.dataframe(dept, use_container_width=True)
 
+    # ── Top 10 highest risk students ──────────────────────────────────────
+    st.markdown("---")
+    st.subheader("Top 10 Highest Risk Students")
+    top10 = res.nlargest(10, 'addiction_score')
+    display_top = [c for c in
+        ['student_name', 'student_id', 'department', 'semester',
+         'predicted_risk', 'addiction_score', 'confidence_pct']
+        if c in top10.columns]
+    st.dataframe(
+        top10[display_top].style.apply(_highlight_risk_row, axis=1),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    names = [
+        str(r.get('student_name', f'S{i}'))[:15]
+        for i, r in top10.iterrows()
+    ]
+    scores = top10['addiction_score'].tolist()
+    colors = [RISK_COLORS.get(r, '#888') for r in top10['predicted_risk']]
+    ax.barh(names[::-1], scores[::-1], color=colors[::-1], edgecolor='white')
+    ax.set_xlabel('Addiction Risk Score')
+    ax.set_title('Top 10 Risk Scores')
+    ax.spines[['top', 'right']].set_visible(False)
+    plt.tight_layout()
+    st.pyplot(fig)
+    plt.close()
+
+    # ── Department-wise risk distribution ─────────────────────────────────
+    if 'department' in res.columns:
+        st.markdown("---")
+        st.subheader("Department-wise Risk Distribution")
+        dept_risk = pd.crosstab(
+            res['department'], res['predicted_risk'],
+        ).reindex(columns=CLASS_NAMES, fill_value=0)
+
+        fig, ax = plt.subplots(figsize=(9, max(3, len(dept_risk) * 0.45)))
+        bottom = np.zeros(len(dept_risk))
+        for level in CLASS_NAMES:
+            if level in dept_risk.columns:
+                vals = dept_risk[level].values
+                ax.barh(dept_risk.index, vals, left=bottom, label=level,
+                        color=RISK_COLORS[level], edgecolor='white')
+                bottom += vals
+        ax.set_xlabel('Number of Students')
+        ax.set_title('Risk Distribution by Department')
+        ax.legend(title='Risk', fontsize=8)
+        ax.spines[['top', 'right']].set_visible(False)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+        # Department risk heatmap
+        st.subheader("Department Risk Heatmap")
+        fig, ax = plt.subplots(figsize=(8, max(3, len(dept_risk) * 0.5)))
+        sns.heatmap(dept_risk, annot=True, fmt='d', cmap='YlOrRd', ax=ax)
+        ax.set_title('Department vs Risk Level')
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+    # ── Semester-wise risk distribution ───────────────────────────────────
+    if 'semester' in res.columns:
+        st.markdown("---")
+        st.subheader("Semester-wise Risk Distribution")
+        sem_risk = pd.crosstab(
+            res['semester'].astype(str), res['predicted_risk'],
+        ).reindex(columns=CLASS_NAMES, fill_value=0)
+
+        fig, ax = plt.subplots(figsize=(8, 4))
+        bottom = np.zeros(len(sem_risk))
+        for level in CLASS_NAMES:
+            if level in sem_risk.columns:
+                vals = sem_risk[level].values
+                ax.bar(sem_risk.index, vals, bottom=bottom, label=level,
+                       color=RISK_COLORS[level], edgecolor='white')
+                bottom += vals
+        ax.set_xlabel('Semester')
+        ax.set_ylabel('Students')
+        ax.set_title('Risk Distribution by Semester')
+        ax.legend(title='Risk', fontsize=8)
+        ax.spines[['top', 'right']].set_visible(False)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
+        # Risk trend: average score by semester
+        st.subheader("Risk Trend — Average Score by Semester")
+        sem_avg = res.groupby('semester')['addiction_score'].mean().sort_index()
+        fig, ax = plt.subplots(figsize=(8, 3))
+        ax.plot(sem_avg.index.astype(str), sem_avg.values, marker='o',
+                linewidth=2, color='#3498db')
+        ax.fill_between(range(len(sem_avg)), sem_avg.values, alpha=0.15, color='#3498db')
+        ax.set_xticks(range(len(sem_avg)))
+        ax.set_xticklabels(sem_avg.index.astype(str))
+        ax.set_xlabel('Semester')
+        ax.set_ylabel('Avg Addiction Score')
+        ax.set_ylim(0, 100)
+        ax.spines[['top', 'right']].set_visible(False)
+        plt.tight_layout()
+        st.pyplot(fig)
+        plt.close()
+
     # ── Full table ────────────────────────────────────────────────────────
     st.markdown("---")
     st.subheader("📋 All Students — Results Table")
@@ -409,18 +546,8 @@ elif page == "📊 Class Analytics":
          'predicted_risk','addiction_score','confidence_pct'] + feat_cols[:5]
         if c in res.columns]
 
-    COLOR_MAP = {
-        'Low'     :'background-color:#c8f7c5',
-        'Moderate':'background-color:#fff3cd',
-        'High'    :'background-color:#ffd6a5',
-        'Severe'  :'background-color:#ffcdd2',
-    }
-    def highlight(row):
-        c = COLOR_MAP.get(row.get('predicted_risk',''),'')
-        return [c]*len(row)
-
     st.dataframe(
-        res[display_cols].style.apply(highlight, axis=1),
+        res[display_cols].style.apply(_highlight_risk_row, axis=1),
         use_container_width=True, height=420
     )
 
@@ -535,6 +662,37 @@ elif page == "🧑‍🎓 Per-Student View":
     ax2.set_yticks([])
     ax2.set_xlabel('0 = No Risk ◄──────────────────────────────► 100 = Severe Risk')
     plt.tight_layout(); st.pyplot(fig2); plt.close()
+
+    # ── SHAP waterfall (uses existing model/scaler if available)
+    with st.spinner("Calculating SHAP waterfall..."):
+        try:
+            model, scaler, feature_names = _load_model_artifacts()
+            explainer = _load_shap_explainer(model)
+
+            input_values = [row.get(feat, 0) for feat in MODEL_FEATURES]
+            input_arr = np.array([input_values])
+            input_scaled = scaler.transform(input_arr)
+
+            _, shap_impact_dict, _ = explain_single(
+                input_scaled, feature_names, model, explainer=explainer,
+            )
+
+            raw_name = row.get('student_name') or f'student_{idx+1}'
+            safe_name = re.sub(r'[^A-Za-z0-9_-]', '_', str(raw_name))
+            tmpdir = tempfile.gettempdir()
+            save_path = os.path.join(
+                tmpdir,
+                f"shap_waterfall_{safe_name}_{datetime.date.today().isoformat()}.png",
+            )
+
+            waterfall_path = plot_waterfall(
+                input_scaled, feature_names, model,
+                save_path=save_path, explainer=explainer,
+            )
+            st.image(waterfall_path, caption=f"SHAP waterfall — {raw_name}", width='stretch')
+        except Exception as e:
+            logger.warning('SHAP waterfall failed: %s', e)
+            st.warning(f"SHAP waterfall unavailable: {e}")
 
     # ── Recommendations ───────────────────────────────────────────────────
     st.markdown("---")

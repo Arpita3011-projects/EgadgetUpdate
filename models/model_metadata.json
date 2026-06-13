@@ -1,0 +1,29 @@
+{
+  "algorithm": "Random Forest (GridSearchCV tuned)",
+  "accuracy": "0.9292",
+  "precision": "0.9324",
+  "recall": "0.9292",
+  "f1_score": "0.9296",
+  "roc_auc": "0.9928",
+  "training_samples": "844",
+  "features": [
+    "daily_screen_time_hours",
+    "num_social_media_platforms",
+    "late_night_usage",
+    "gpa",
+    "missed_classes_per_month",
+    "sleep_hours",
+    "sleep_disturbances",
+    "physical_activity_hours",
+    "stress_level",
+    "social_interaction_quality"
+  ],
+  "date_trained": "2026-06-13 18:40:28",
+  "best_parameters": {
+    "max_depth": 10,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 300
+  },
+  "best_cv_score": "0.8919"
+}

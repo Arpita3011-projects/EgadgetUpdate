@@ -1,0 +1,11 @@
+{
+  "best_parameters": {
+    "max_depth": 10,
+    "min_samples_leaf": 1,
+    "min_samples_split": 2,
+    "n_estimators": 300
+  },
+  "best_cv_f1_macro": 0.8919,
+  "search_method": "GridSearchCV",
+  "scoring": "f1_macro"
+}

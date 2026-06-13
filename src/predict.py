@@ -17,7 +17,10 @@ import pandas as pd
 import joblib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from logging_config import get_logger
 from recommendation import get_recommendations, calculate_addiction_score
+
+logger = get_logger('predict')
 
 CLASS_NAMES   = ['Low', 'Moderate', 'High', 'Severe']
 RISK_EMOJI    = {0: '🟢', 1: '🟡', 2: '🟠', 3: '🔴'}
@@ -25,6 +28,7 @@ RISK_EMOJI    = {0: '🟢', 1: '🟡', 2: '🟠', 3: '🔴'}
 
 def load_artifacts():
     base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
+    logger.info('Loading model artifacts from %s', base)
     model         = joblib.load(os.path.join(base, 'random_forest_model.pkl'))
     scaler        = joblib.load(os.path.join(base, 'scaler.pkl'))
     feature_names = joblib.load(os.path.join(base, 'feature_names.pkl'))

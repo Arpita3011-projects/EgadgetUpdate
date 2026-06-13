@@ -1,0 +1,80 @@
+{
+  "primary_model": {
+    "accuracy": 0.9292,
+    "precision": 0.9324,
+    "recall": 0.9292,
+    "f1_score": 0.9296,
+    "classification_report": {
+      "Low": {
+        "precision": 0.9591836734693877,
+        "recall": 0.8867924528301887,
+        "f1-score": 0.9215686274509803,
+        "support": 53.0
+      },
+      "Moderate": {
+        "precision": 0.847457627118644,
+        "recall": 0.9433962264150944,
+        "f1-score": 0.8928571428571429,
+        "support": 53.0
+      },
+      "High": {
+        "precision": 0.96,
+        "recall": 0.9056603773584906,
+        "f1-score": 0.9320388349514563,
+        "support": 53.0
+      },
+      "Severe": {
+        "precision": 0.9629629629629629,
+        "recall": 0.9811320754716981,
+        "f1-score": 0.9719626168224299,
+        "support": 53.0
+      },
+      "accuracy": 0.9292452830188679,
+      "macro avg": {
+        "precision": 0.9324010658877486,
+        "recall": 0.929245283018868,
+        "f1-score": 0.9296068055205025,
+        "support": 212.0
+      },
+      "weighted avg": {
+        "precision": 0.9324010658877486,
+        "recall": 0.9292452830188679,
+        "f1-score": 0.9296068055205023,
+        "support": 212.0
+      }
+    },
+    "roc_auc": 0.9928
+  },
+  "model_comparison": {
+    "Random Forest": {
+      "accuracy": 0.9292,
+      "precision": 0.9324,
+      "recall": 0.9292,
+      "f1_score": 0.9296
+    },
+    "Logistic Regression": {
+      "accuracy": 0.8585,
+      "precision": 0.8639,
+      "recall": 0.8585,
+      "f1_score": 0.8604
+    },
+    "Decision Tree": {
+      "accuracy": 0.8255,
+      "precision": 0.8309,
+      "recall": 0.8255,
+      "f1_score": 0.8261
+    },
+    "SVM": {
+      "accuracy": 0.9292,
+      "precision": 0.936,
+      "recall": 0.9292,
+      "f1_score": 0.93
+    }
+  },
+  "chart_paths": {
+    "confusion_matrix": "E:\\EGadgetupdate\\models\\evaluation\\confusion_matrix.png",
+    "roc_curves": "E:\\EGadgetupdate\\models\\evaluation\\roc_curves.png",
+    "feature_importance": "E:\\EGadgetupdate\\models\\evaluation\\feature_importance.png",
+    "model_comparison": "E:\\EGadgetupdate\\models\\evaluation\\model_comparison.png"
+  }
+}

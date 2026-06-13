@@ -6,14 +6,20 @@ maps columns → features, runs predictions for every student,
 returns rich results DataFrame + class summary + alerts.
 """
 
-import os, sys
+import os
+import sys
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import joblib
 import numpy as np
 import pandas as pd
-import joblib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from recommendation     import get_recommendations, calculate_addiction_score, get_alert_message
+from logging_config import get_logger
+from recommendation import get_recommendations, calculate_addiction_score, get_alert_message
+
+logger = get_logger('batch_predict')
 from form_column_mapper import (build_column_map, normalise_dataframe,
                                 MODEL_FEATURES, IDENTITY_COLUMNS)
 
@@ -21,11 +27,14 @@ CLASS_NAMES = ['Low', 'Moderate', 'High', 'Severe']
 RISK_COLORS = {'Low':'#27ae60','Moderate':'#f39c12','High':'#e67e22','Severe':'#c0392b'}
 
 
-def load_artifacts(models_dir=None):
+def load_artifacts(
+    models_dir: Optional[str] = None,
+) -> Tuple[Any, Any, List[str]]:
     if models_dir is None:
         models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
-    model         = joblib.load(os.path.join(models_dir, 'random_forest_model.pkl'))
-    scaler        = joblib.load(os.path.join(models_dir, 'scaler.pkl'))
+    logger.info('Loading model artifacts from %s', models_dir)
+    model = joblib.load(os.path.join(models_dir, 'random_forest_model.pkl'))
+    scaler = joblib.load(os.path.join(models_dir, 'scaler.pkl'))
     feature_names = joblib.load(os.path.join(models_dir, 'feature_names.pkl'))
     return model, scaler, feature_names
 
@@ -57,7 +66,10 @@ def read_uploaded_file(uploaded_file) -> pd.DataFrame:
         raise TypeError(f"Expected file object or path string, got {type(uploaded_file)}")
 
 
-def predict_from_dataframe(raw_df: pd.DataFrame, custom_column_map: dict = None) -> dict:
+def predict_from_dataframe(
+    raw_df: pd.DataFrame,
+    custom_column_map: Optional[Dict[str, str]] = None,
+) -> Dict[str, Any]:
     """
     Core prediction engine — works directly with a DataFrame.
 
@@ -91,6 +103,8 @@ def predict_from_dataframe(raw_df: pd.DataFrame, custom_column_map: dict = None)
 
     X        = features_df.reindex(columns=feature_names, fill_value=0).values
     X_scaled = scaler.transform(X)
+
+    logger.info('Running batch prediction for %d students', len(features_df))
 
     # ── Predict ───────────────────────────────────────────────────────────
     risk_indices = model.predict(X_scaled).astype(int)
@@ -143,6 +157,28 @@ def predict_from_dataframe(raw_df: pd.DataFrame, custom_column_map: dict = None)
             results.groupby('department')['addiction_score']
             .mean().round(1).sort_values(ascending=False).to_dict()
         )
+        dept_risk = (
+            results.groupby(['department', 'predicted_risk'])
+            .size()
+            .unstack(fill_value=0)
+            .reindex(columns=CLASS_NAMES, fill_value=0)
+        )
+        summary['department_risk_distribution'] = {
+            dept: {lvl: int(dept_risk.loc[dept, lvl]) for lvl in CLASS_NAMES}
+            for dept in dept_risk.index
+        }
+
+    if 'semester' in results.columns:
+        sem_risk = (
+            results.groupby(['semester', 'predicted_risk'])
+            .size()
+            .unstack(fill_value=0)
+            .reindex(columns=CLASS_NAMES, fill_value=0)
+        )
+        summary['semester_risk_distribution'] = {
+            str(sem): {lvl: int(sem_risk.loc[sem, lvl]) for lvl in CLASS_NAMES}
+            for sem in sem_risk.index
+        }
 
     # ── Alerts ────────────────────────────────────────────────────────────
     alerts = []

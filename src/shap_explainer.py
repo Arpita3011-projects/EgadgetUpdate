@@ -5,152 +5,244 @@ Uses SHAP (TreeExplainer) to explain individual predictions and
 generate global feature importance visualizations.
 """
 
+from __future__ import annotations
+
 import os
 import sys
-import numpy as np
-import matplotlib
-matplotlib.use('Agg')          # non-interactive backend (safe for servers)
-import matplotlib.pyplot as plt
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import joblib
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 import shap
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from logging_config import get_logger
+
+logger = get_logger('shap')
+
 CLASS_NAMES = ['Low', 'Moderate', 'High', 'Severe']
 
+# Module-level explainer cache keyed by model object id
+_EXPLAINER_CACHE: Dict[int, shap.TreeExplainer] = {}
 
-def load_model_and_scaler():
-    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
-    model         = joblib.load(os.path.join(base, 'random_forest_model.pkl'))
-    scaler        = joblib.load(os.path.join(base, 'scaler.pkl'))
-    feature_names = joblib.load(os.path.join(base, 'feature_names.pkl'))
+
+def load_model_and_scaler(
+    models_dir: Optional[str] = None,
+) -> Tuple[Any, Any, List[str]]:
+    """Load trained model, scaler, and feature names from disk."""
+    if models_dir is None:
+        models_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'models')
+    logger.info('Loading model artifacts from %s', models_dir)
+    model = joblib.load(os.path.join(models_dir, 'random_forest_model.pkl'))
+    scaler = joblib.load(os.path.join(models_dir, 'scaler.pkl'))
+    feature_names = joblib.load(os.path.join(models_dir, 'feature_names.pkl'))
     return model, scaler, feature_names
 
 
-# ── Individual explanation ────────────────────────────────────────────────────
-
-def explain_single(input_scaled, feature_names, model=None):
+def get_tree_explainer(model: Any) -> shap.TreeExplainer:
     """
-    input_scaled : np.ndarray shape (1, n_features) – already scaled
-    Returns dict: {feature: shap_value} for the predicted class.
+    Return a cached TreeExplainer for the given model instance.
+
+    Reuses explainer objects to avoid expensive repeated initialization.
+    """
+    key = id(model)
+    if key not in _EXPLAINER_CACHE:
+        logger.info('Creating new SHAP TreeExplainer')
+        _EXPLAINER_CACHE[key] = shap.TreeExplainer(model)
+    return _EXPLAINER_CACHE[key]
+
+
+def _extract_class_shap(
+    shap_values: Union[List[np.ndarray], np.ndarray],
+    predicted_class: int,
+) -> np.ndarray:
+    """Extract SHAP values for a single sample and predicted class."""
+    if isinstance(shap_values, list):
+        return np.array(shap_values[predicted_class][0])
+    if len(shap_values.shape) == 3:
+        return np.array(shap_values[0, :, predicted_class])
+    return np.array(shap_values[0])
+
+
+def _get_base_value(explainer: shap.TreeExplainer, predicted_class: int) -> float:
+    """Return expected/base value for the predicted class."""
+    ev = explainer.expected_value
+    if isinstance(ev, (list, tuple, np.ndarray)):
+        return float(ev[predicted_class])
+    return float(ev)
+
+
+def explain_single(
+    input_scaled: np.ndarray,
+    feature_names: List[str],
+    model: Optional[Any] = None,
+    explainer: Optional[shap.TreeExplainer] = None,
+) -> Tuple[int, Dict[str, float], Union[List[np.ndarray], np.ndarray]]:
+    """
+    Explain a single scaled input.
+
+    Parameters
+    ----------
+    input_scaled : np.ndarray
+        Shape (1, n_features), already scaled.
+    feature_names : list[str]
+        Feature column names.
+    model : sklearn estimator, optional
+        If None, loads from disk.
+    explainer : shap.TreeExplainer, optional
+        Reuse a cached explainer when provided.
+
+    Returns
+    -------
+    tuple
+        (predicted_class, {feature: shap_value}, raw_shap_values)
     """
     if model is None:
         model, _, _ = load_model_and_scaler()
 
-    explainer   = shap.TreeExplainer(model)
-    shap_values = explainer.shap_values(input_scaled)   # list of arrays, one per class
+    if explainer is None:
+        explainer = get_tree_explainer(model)
 
-    predicted_class = model.predict(input_scaled)[0]
-    if isinstance(shap_values, list):
-        sv = shap_values[predicted_class][0]
-    else:
-        if len(shap_values.shape) == 3:
-            sv = shap_values[0, :, predicted_class]
-        else:
-            sv = shap_values[0]
+    logger.info('Computing SHAP values for single prediction')
+    shap_values = explainer.shap_values(input_scaled)
+    predicted_class = int(model.predict(input_scaled)[0])
+    sv = _extract_class_shap(shap_values, predicted_class)
 
     impact = dict(sorted(
         zip(feature_names, sv),
         key=lambda x: abs(x[1]),
-        reverse=True
+        reverse=True,
     ))
 
-    print(f"\n[SHAP] Prediction: {CLASS_NAMES[predicted_class]}")
-    print("[SHAP] Top feature contributions:")
-    for feat, val in list(impact.items())[:6]:
-        arrow = '+' if val > 0 else '-'
-        print(f"  {arrow} {feat:<35} {val:+.4f}")
-
+    logger.debug('SHAP prediction: %s', CLASS_NAMES[predicted_class])
     return predicted_class, impact, shap_values
 
 
-# ── Waterfall chart for one student ──────────────────────────────────────────
+def plot_waterfall(
+    input_scaled: np.ndarray,
+    feature_names: List[str],
+    model: Optional[Any] = None,
+    save_path: Optional[str] = None,
+    explainer: Optional[shap.TreeExplainer] = None,
+    max_display: int = 10,
+) -> str:
+    """
+    Generate an official SHAP waterfall plot and save as PNG.
 
-def plot_waterfall(input_scaled, feature_names, model=None, save_path=None):
-    """Saves a waterfall plot and returns the file path."""
+    Uses ``shap.plots.waterfall`` (SHAP >= 0.44) with fallback to
+    ``shap.waterfall_plot`` for older versions.
+    """
     if model is None:
         model, _, _ = load_model_and_scaler()
 
-    explainer   = shap.TreeExplainer(model)
+    if explainer is None:
+        explainer = get_tree_explainer(model)
+
     shap_values = explainer.shap_values(input_scaled)
-    pred_class  = model.predict(input_scaled)[0]
+    pred_class = int(model.predict(input_scaled)[0])
+    sv = _extract_class_shap(shap_values, pred_class)
+    base_value = _get_base_value(explainer, pred_class)
 
-    if isinstance(shap_values, list):
-        sv = shap_values[pred_class][0]
-    else:
-        if len(shap_values.shape) == 3:
-            sv = shap_values[0, :, pred_class]
-        else:
-            sv = shap_values[0]
-    sorted_idx = np.argsort(np.abs(sv))[::-1]
-
-    fig, ax = plt.subplots(figsize=(9, 5))
-    colors  = ['#e74c3c' if v > 0 else '#2ecc71' for v in sv[sorted_idx]]
-    ax.barh([feature_names[i] for i in sorted_idx], sv[sorted_idx], color=colors)
-    ax.axvline(0, color='black', linewidth=0.8)
-    ax.set_title(f'SHAP Waterfall – Predicted: {CLASS_NAMES[pred_class]}', fontsize=13)
-    ax.set_xlabel('SHAP Value (impact on prediction)')
-    plt.tight_layout()
+    explanation = shap.Explanation(
+        values=sv,
+        base_values=base_value,
+        data=input_scaled[0],
+        feature_names=feature_names,
+    )
 
     if save_path is None:
-        reports_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   '..', 'reports')
+        reports_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..', 'reports',
+        )
         os.makedirs(reports_dir, exist_ok=True)
         save_path = os.path.join(reports_dir, 'shap_waterfall.png')
 
-    plt.savefig(save_path, dpi=150)
+    logger.info('Generating SHAP waterfall plot -> %s', save_path)
+    plt.figure(figsize=(10, 6))
+    try:
+        shap.plots.waterfall(explanation, max_display=max_display, show=False)
+    except (AttributeError, TypeError):
+        shap.waterfall_plot(explanation, max_display=max_display, show=False)
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
-    print(f"[SHAP] Waterfall saved -> {save_path}")
+    logger.info('SHAP waterfall saved -> %s', save_path)
     return save_path
 
 
-# ── Global feature importance (summary plot) ─────────────────────────────────
-
-def plot_global_importance(X_sample, feature_names, model=None, save_path=None):
+def plot_global_importance(
+    X_sample: np.ndarray,
+    feature_names: List[str],
+    model: Optional[Any] = None,
+    save_path: Optional[str] = None,
+    explainer: Optional[shap.TreeExplainer] = None,
+) -> str:
     """
-    X_sample : np.ndarray, scaled, subset of training data (e.g. 200 rows)
+    Plot mean |SHAP| global feature importance from a sample batch.
+
+    Parameters
+    ----------
+    X_sample : np.ndarray
+        Scaled feature matrix subset (e.g. 200 rows).
     """
     if model is None:
         model, _, _ = load_model_and_scaler()
 
-    explainer   = shap.TreeExplainer(model)
+    if explainer is None:
+        explainer = get_tree_explainer(model)
+
+    logger.info('Computing global SHAP importance (%d samples)', len(X_sample))
     shap_values = explainer.shap_values(X_sample)
 
-    # Mean absolute SHAP across all classes
     if isinstance(shap_values, list):
         mean_abs = np.mean([np.abs(sv).mean(axis=0) for sv in shap_values], axis=0)
+    elif len(shap_values.shape) == 3:
+        mean_abs = np.mean(np.abs(shap_values), axis=(0, 2))
     else:
-        if len(shap_values.shape) == 3:
-            mean_abs = np.mean(np.abs(shap_values), axis=(0, 2))
-        else:
-            mean_abs = np.mean(np.abs(shap_values), axis=0)
-    order    = np.argsort(mean_abs)[::-1][:10]
+        mean_abs = np.mean(np.abs(shap_values), axis=0)
+
+    order = np.argsort(mean_abs)[::-1][:10]
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    ax.barh([feature_names[i] for i in order[::-1]], mean_abs[order[::-1]],
-            color='#3498db')
+    ax.barh(
+        [feature_names[i] for i in order[::-1]],
+        mean_abs[order[::-1]],
+        color='#3498db',
+    )
     ax.set_title('Global Feature Importance (mean |SHAP|)', fontsize=13)
     ax.set_xlabel('Mean |SHAP Value|')
     plt.tight_layout()
 
     if save_path is None:
-        reports_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                   '..', 'reports')
+        reports_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..', 'reports',
+        )
         os.makedirs(reports_dir, exist_ok=True)
         save_path = os.path.join(reports_dir, 'shap_global_importance.png')
 
     plt.savefig(save_path, dpi=150)
     plt.close()
-    print(f"[SHAP] Global importance saved -> {save_path}")
+    logger.info('Global importance saved -> %s', save_path)
     return save_path
+
+
+def clear_explainer_cache() -> None:
+    """Clear module-level SHAP explainer cache."""
+    _EXPLAINER_CACHE.clear()
 
 
 if __name__ == '__main__':
     from preprocess import preprocess
+
     model, scaler, feature_names = load_model_and_scaler()
     X, y, _ = preprocess(apply_smote=False)
+    explainer = get_tree_explainer(model)
 
-    # explain first student
-    explain_single(X[:1], feature_names, model)
-    plot_waterfall(X[:1], feature_names, model)
-    plot_global_importance(X[:200], feature_names, model)
+    explain_single(X[:1], feature_names, model, explainer=explainer)
+    plot_waterfall(X[:1], feature_names, model, explainer=explainer)
+    plot_global_importance(X[:200], feature_names, model, explainer=explainer)

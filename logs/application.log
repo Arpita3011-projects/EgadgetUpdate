@@ -1,0 +1,63 @@
+2026-06-13 18:39:57 | INFO     | egadget.train | Train size=844 Test size=212
+2026-06-13 18:39:57 | INFO     | egadget.train | Starting Random Forest hyperparameter tuning
+2026-06-13 18:40:28 | INFO     | egadget.train | Best CV F1-macro=0.8919 params={'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
+2026-06-13 18:40:28 | INFO     | egadget.train | Random Forest (Tuned) | accuracy=0.9292 precision=0.9324 recall=0.9292 f1=0.9296
+2026-06-13 18:40:28 | INFO     | egadget.train | Logistic Regression | accuracy=0.8585 precision=0.8639 recall=0.8585 f1=0.8604
+2026-06-13 18:40:28 | INFO     | egadget.train | Decision Tree | accuracy=0.8255 precision=0.8309 recall=0.8255 f1=0.8261
+2026-06-13 18:40:28 | INFO     | egadget.train | SVM | accuracy=0.9292 precision=0.9360 recall=0.9292 f1=0.9300
+2026-06-13 18:40:28 | INFO     | egadget.train | Tuning results saved -> E:\EGadgetupdate\src\..\models\tuning_results.json
+2026-06-13 18:40:28 | INFO     | egadget.train | Model metadata saved -> E:\EGadgetupdate\src\..\models\model_metadata.json
+2026-06-13 18:40:29 | INFO     | egadget.model_evaluation | Confusion matrix saved -> E:\EGadgetupdate\models\evaluation\confusion_matrix.png
+2026-06-13 18:40:29 | INFO     | egadget.model_evaluation | ROC curves saved -> E:\EGadgetupdate\models\evaluation\roc_curves.png
+2026-06-13 18:40:29 | INFO     | egadget.model_evaluation | Feature importance chart saved -> E:\EGadgetupdate\models\evaluation\feature_importance.png
+2026-06-13 18:40:29 | INFO     | egadget.model_evaluation | Model comparison chart saved -> E:\EGadgetupdate\models\evaluation\model_comparison.png
+2026-06-13 18:40:29 | INFO     | egadget.model_evaluation | Evaluation results saved -> E:\EGadgetupdate\models\evaluation_results.json
+2026-06-13 18:40:29 | INFO     | egadget.train | Model saved -> E:\EGadgetupdate\src\..\models\random_forest_model.pkl
+2026-06-13 18:41:12 | INFO     | egadget.report | Generating student PDF for TestStudent (risk=High, score=74.0)
+2026-06-13 18:41:12 | INFO     | egadget.report | Student PDF saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-7\test_generate_pdf_report_creat0\reports\TestStudent_2026-06-13_report.pdf
+2026-06-13 18:41:12 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:41:12 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:41:12 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:41:12 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:41:12 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:41:13 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:41:13 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:41:13 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:41:13 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:41:13 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:41:13 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:41:13 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:41:13 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-7\test_plot_waterfall_creates_fi0\shap_waterfall_test.png
+2026-06-13 18:41:13 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-7\test_plot_waterfall_creates_fi0\shap_waterfall_test.png
+2026-06-13 18:41:39 | INFO     | egadget.report | Generating student PDF for TestStudent (risk=High, score=74.0)
+2026-06-13 18:41:39 | INFO     | egadget.report | Student PDF saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-8\test_generate_pdf_report_creat0\reports\TestStudent_2026-06-13_report.pdf
+2026-06-13 18:42:11 | INFO     | egadget.report | Generating student PDF for TestStudent (risk=High, score=74.0)
+2026-06-13 18:42:11 | INFO     | egadget.report | Student PDF saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-9\test_generate_pdf_report_creat0\reports\TestStudent_2026-06-13_report.pdf
+2026-06-13 18:43:19 | INFO     | egadget.report | Generating student PDF for TestStudent (risk=High, score=74.0)
+2026-06-13 18:43:19 | INFO     | egadget.report | Student PDF saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-10\test_generate_pdf_report_creat0\reports\TestStudent_2026-06-13_report.pdf
+2026-06-13 18:43:19 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:43:19 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:43:19 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:43:20 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:43:20 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:43:20 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:43:20 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:43:20 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:43:20 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:43:20 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:43:20 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:43:20 | INFO     | egadget.shap | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:43:20 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:43:20 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-10\test_plot_waterfall_creates_fi0\shap_waterfall_test.png
+2026-06-13 18:43:21 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\pytest-of-arpit\pytest-10\test_plot_waterfall_creates_fi0\shap_waterfall_test.png
+2026-06-13 18:48:48 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-13 18:48:48 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-13 18:49:53 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-13 18:49:53 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-13 18:49:53 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-13 18:50:37 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:50:37 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-13.png
+2026-06-13 18:50:39 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-13.png
+2026-06-13 18:51:08 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-13 18:51:08 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-13.png
+2026-06-13 18:51:10 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-13.png

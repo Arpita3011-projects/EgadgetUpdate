@@ -202,6 +202,7 @@ def normalise_dataframe(df, column_map: dict):
     # Impute missing values with median
     for col in features_df.columns:
         if features_df[col].isnull().any():
-            features_df[col].fillna(features_df[col].median(), inplace=True)
+            # Avoid chained-assignment / copy-on-write warnings: assign the filled series back
+            features_df[col] = features_df[col].fillna(features_df[col].median())
 
     return features_df, identity_df
