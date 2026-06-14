@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from typing import Dict, Any
 from backend.schemas import PredictInput
-from backend.model_loader import predict_single
+from backend.model_loader import predict_single, get_shap_explanation
 
 app = FastAPI(
     title="E-Gadget Addiction Prediction API",
@@ -29,10 +29,14 @@ async def predict_risk(data: PredictInput) -> Dict[str, Any]:
         
         # Call the prediction logic
         result = predict_single(features_dict)
+        shap_result = get_shap_explanation(features_dict)
         
         return {
             "status": "success",
-            "data": result
+            "data": {
+                **result,
+                "shap": shap_result
+            }
         }
     except Exception as e:
         raise HTTPException(
