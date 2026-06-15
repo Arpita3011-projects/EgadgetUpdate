@@ -180,7 +180,7 @@ def generate_pdf_report(
     if shap_impact:
         if not waterfall_img:
             try:
-                feats = list(shap_impact.items())[:8]
+                feats = list(shap_impact.items())
                 names = [n for n, _ in feats]
                 vals = [v for _, v in feats]
                 fig, ax = plt.subplots(figsize=(6, 2))
@@ -205,7 +205,7 @@ def generate_pdf_report(
             new_x=XPos.LMARGIN, new_y=YPos.NEXT,
         )
         pdf.set_font('Helvetica', '', 10)
-        for feat, val in list(shap_impact.items())[:6]:
+        for feat, val in list(shap_impact.items()):
             arrow = 'increases' if val > 0 else 'decreases'
             pdf.cell(
                 0, 7,

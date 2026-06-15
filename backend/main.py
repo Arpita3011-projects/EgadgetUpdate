@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException
 import io
+import os
 from fastapi import FastAPI, HTTPException, UploadFile, File
+from fastapi.responses import FileResponse
 from typing import Dict, Any
 from backend.schemas import PredictInput
 from backend.model_loader import predict_single, get_shap_explanation
@@ -8,6 +9,9 @@ from src.batch_predictor import (
     read_uploaded_file,
     predict_from_dataframe
 )
+from src.recommendation import calculate_addiction_score
+from src.report_generator import generate_pdf_report
+from src.batch_report_generator import generate_class_report
 
 app = FastAPI(
     title="E-Gadget Addiction Prediction API",
@@ -44,6 +48,90 @@ async def predict_risk(data: PredictInput) -> Dict[str, Any]:
                 "shap": shap_result
             }
         }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"status": "error", "message": str(e)}
+        )
+
+@app.post("/generate-class-report")
+async def generate_class_report_endpoint(file: UploadFile = File(...)):
+    """
+    Accept CSV or XLSX file, run batch predictions for all students, 
+    and return a class-level analytics PDF report.
+    """
+    try:
+        # Read file contents into memory
+        contents = await file.read()
+        data_stream = io.BytesIO(contents)
+        # Mock the .name attribute for compatibility with extension check
+        data_stream.name = file.filename
+        
+        # Convert to DataFrame and run batch prediction
+        raw_df = read_uploaded_file(data_stream)
+        result = predict_from_dataframe(raw_df)
+        
+        # Create reports directory if it doesn't exist
+        reports_dir = "reports"
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        # Generate the class report PDF
+        pdf_path = generate_class_report(
+            summary=result["summary"],
+            results_df=result["results_df"],
+            alerts=result["alerts"],
+            reports_dir=reports_dir
+        )
+        
+        return FileResponse(
+            path=pdf_path,
+            filename=os.path.basename(pdf_path),
+            media_type='application/pdf'
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"status": "error", "message": str(e)}
+        )
+
+@app.post("/generate-student-report")
+async def generate_student_report(data: PredictInput):
+    """
+    Generates a personalised PDF report for a single student.
+    """
+    try:
+        # Convert request body to dictionary
+        features_dict = data.model_dump()
+        
+        # Run predictions and SHAP explanations
+        result = predict_single(features_dict)
+        shap_result = get_shap_explanation(features_dict)
+        
+        # Calculate addiction score for the report
+        addiction_score = calculate_addiction_score(list(result["probabilities"].values()))
+        
+        # Placeholder recommendations as requested
+        tips = [
+            "Reduce screen time",
+            "Maintain healthy sleep habits",
+            "Increase physical activity"
+        ]
+        
+        # Generate PDF report using requirements mapping
+        pdf_path = generate_pdf_report(
+            student_name="Anonymous",
+            risk_label=result["risk_label"],
+            score=addiction_score,
+            tips=tips,
+            shap_impact=shap_result["feature_importance"],
+            confidence_pct=result["confidence"]
+        )
+        
+        return FileResponse(
+            path=pdf_path,
+            filename=os.path.basename(pdf_path),
+            media_type='application/pdf'
+        )
     except Exception as e:
         raise HTTPException(
             status_code=500,
