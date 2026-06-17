@@ -124,3 +124,25 @@
 2026-06-16 16:36:18 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
 2026-06-16 16:36:18 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=3.0)
 2026-06-16 16:36:20 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-16_report.pdf
+2026-06-17 11:19:40 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-17 11:19:40 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-17 11:19:40 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-17 11:19:43 | INFO     | egadget.batch_report | Class PDF saved -> reports\class_report_2026-06-17.pdf
+2026-06-17 11:20:02 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=14.1)
+2026-06-17 11:20:02 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\Anonymous_2026-06-17_report.pdf
+2026-06-17 11:20:21 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-17 11:20:21 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-17 11:28:03 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-17 11:28:03 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-17 11:28:15 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-17 11:28:15 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-17 11:28:15 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-17 11:28:34 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-17 11:28:34 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-17.png
+2026-06-17 11:28:35 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-17.png
+2026-06-17 11:29:40 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-17 11:29:42 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-17.pdf
+2026-06-17 11:29:57 | INFO     | egadget.batch_report | Generating student cards PDF (max 10)
+2026-06-17 11:29:58 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-17.pdf
+2026-06-17 11:38:11 | INFO     | egadget.dashboard | Loading model artifacts
+2026-06-17 11:38:11 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
