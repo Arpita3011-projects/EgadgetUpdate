@@ -12,7 +12,11 @@ from __future__ import annotations
 import os
 import sys
 import datetime
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Optional
+
+import requests
+
+API_BASE_URL = "http://127.0.0.1:8000"
 
 import joblib
 import matplotlib
@@ -21,6 +25,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import streamlit as st
+
+def api_request(method: str, endpoint: str, json=None, files=None):
+    url = f"{API_BASE_URL}{endpoint}"
+    try:
+        response = requests.request(
+            method,
+            url,
+            json=json,
+            files=files,
+            timeout=30
+        )
+        response.raise_for_status()
+        return response
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return None
 
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.join(APP_DIR, '..')
@@ -137,6 +157,13 @@ with st.sidebar:
     predict_btn = st.button("🔍 Predict Risk Level", width='stretch', disabled=not model_ready)
 
 if predict_btn and model_ready:
+    health = api_request("GET", "/health")
+
+    if health:
+        st.success("Backend Connected")
+    else:
+        st.warning("Backend Not Reachable")
+
     logger.info('Prediction requested for student: %s', student_name or 'Anonymous')
     input_values = [
         screen_time, social_media, late_night, gpa, missed_classes,
@@ -148,6 +175,36 @@ if predict_btn and model_ready:
 
     risk_idx = int(model.predict(input_scaled)[0])
     probs = model.predict_proba(input_scaled)[0]
+    # Payload creation (kept as per instruction)
+    payload = {
+        "daily_screen_time_hours": screen_time,
+        "num_social_media_platforms": social_media,
+        "late_night_usage": late_night,
+        "gpa": gpa,
+        "missed_classes_per_month": missed_classes,
+        "sleep_hours": sleep_hours,
+        "sleep_disturbances": sleep_disturbances,
+        "physical_activity_hours": physical_activity,
+        "stress_level": stress_level,
+        "social_interaction_quality": social_quality,
+        "student_name": student_name if student_name else None,
+    }
+
+    response = api_request("POST", "/predict", json=payload)
+
+    if not response:
+        st.stop()
+
+    res_data = response.json()["data"]
+
+    risk_idx = res_data["risk_index"]
+
+    probs = np.array([
+        res_data["probabilities"]["Low"],
+        res_data["probabilities"]["Moderate"],
+        res_data["probabilities"]["High"],
+        res_data["probabilities"]["Severe"]
+    ])
     risk_label = CLASS_NAMES[risk_idx]
     add_score = calculate_addiction_score(probs)
     confidence = float(max(probs)) * 100
