@@ -233,3 +233,9 @@
 2026-06-18 13:01:53 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
 2026-06-18 13:01:53 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=3.0)
 2026-06-18 13:01:53 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
+2026-06-18 13:02:09 | INFO     | egadget.dashboard | Prediction requested for student: Anonymous
+2026-06-18 13:02:09 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-18 13:02:10 | INFO     | egadget.shap | Generating SHAP waterfall plot -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:02:11 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:02:11 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=15.0)
+2026-06-18 13:02:11 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
