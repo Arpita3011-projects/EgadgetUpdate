@@ -170,11 +170,7 @@ if predict_btn and model_ready:
         sleep_hours, sleep_disturbances, physical_activity,
         stress_level, social_quality,
     ]
-    input_arr = np.array([input_values])
-    input_scaled = scaler.transform(input_arr)
 
-    risk_idx = int(model.predict(input_scaled)[0])
-    probs = model.predict_proba(input_scaled)[0]
     # Payload creation (kept as per instruction)
     payload = {
         "daily_screen_time_hours": screen_time,
@@ -189,7 +185,8 @@ if predict_btn and model_ready:
         "social_interaction_quality": social_quality,
         "student_name": student_name if student_name else None,
     }
-
+    input_arr = np.array([input_values])
+    input_scaled = scaler.transform(input_arr)
     response = api_request("POST", "/predict", json=payload)
 
     if not response:
