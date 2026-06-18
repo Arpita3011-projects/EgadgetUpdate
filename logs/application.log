@@ -158,3 +158,31 @@
 2026-06-17 13:08:38 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-17.pdf
 2026-06-17 13:08:43 | INFO     | egadget.batch_report | Generating student cards PDF (max 100)
 2026-06-17 13:08:57 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-17.pdf
+2026-06-18 11:56:01 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-18 11:56:01 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-18 11:56:27 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-18 11:56:27 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 11:56:28 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 11:57:22 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-18 11:57:22 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-18.png
+2026-06-18 11:57:25 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-18.png
+2026-06-18 11:57:48 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-18 11:57:57 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-18.pdf
+2026-06-18 11:58:01 | INFO     | egadget.batch_report | Generating student cards PDF (max 100)
+2026-06-18 11:58:39 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-18.pdf
+2026-06-18 12:04:15 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:04:15 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:04:16 | INFO     | egadget.batch_report | Generating student cards PDF (max 200)
+2026-06-18 12:05:33 | INFO     | egadget.batch_report | Student cards PDF saved -> reports\student_cards_2026-06-18.pdf
+2026-06-18 12:05:33 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:05:33 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:05:33 | INFO     | egadget.batch_report | Generating student cards PDF (max 200)
+2026-06-18 12:06:25 | INFO     | egadget.batch_report | Student cards PDF saved -> reports\student_cards_2026-06-18.pdf
+2026-06-18 12:06:40 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:06:40 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:06:41 | INFO     | egadget.batch_report | Generating student cards PDF (max 200)
+2026-06-18 12:07:46 | INFO     | egadget.batch_report | Student cards PDF saved -> reports\student_cards_2026-06-18.pdf
+2026-06-18 12:10:33 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:10:34 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:13:12 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:13:16 | INFO     | egadget.batch_predict | Running batch prediction for 246 students

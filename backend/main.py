@@ -12,6 +12,10 @@ from src.batch_predictor import (
 from src.recommendation import calculate_addiction_score
 from src.report_generator import generate_pdf_report
 from src.batch_report_generator import generate_class_report
+from src.batch_report_generator import (
+    generate_class_report,
+    generate_student_cards
+)
 
 app = FastAPI(
     title="E-Gadget Addiction Prediction API",
@@ -70,6 +74,8 @@ async def generate_class_report_endpoint(file: UploadFile = File(...)):
         # Convert to DataFrame and run batch prediction
         raw_df = read_uploaded_file(data_stream)
         result = predict_from_dataframe(raw_df)
+        print(type(result["alerts"]))
+        print(result["alerts"])
         
         # Create reports directory if it doesn't exist
         reports_dir = "reports"
@@ -138,11 +144,50 @@ async def generate_student_report(data: PredictInput):
             detail={"status": "error", "message": str(e)}
         )
 
+@app.post("/generate-student-cards")
+async def generate_student_cards_endpoint(file: UploadFile = File(...), max_students: int = 200):
+    """
+    Accept CSV or XLSX file, run batch predictions, and return 
+    a PDF with individual student report cards.
+    """
+    try:
+        # Read file contents
+        contents = await file.read()
+        data_stream = io.BytesIO(contents)
+        data_stream.name = file.filename
+        
+        # Run prediction
+        raw_df = read_uploaded_file(data_stream)
+        result = predict_from_dataframe(raw_df)
+        
+        # Setup directory
+        reports_dir = "reports"
+        os.makedirs(reports_dir, exist_ok=True)
+        
+        # Generate PDF
+        pdf_path = generate_student_cards(
+            results_df=result["results_df"],
+            reports_dir=reports_dir,
+            max_students=max_students
+        )
+        
+        return FileResponse(
+            path=pdf_path,
+            filename=os.path.basename(pdf_path),
+            media_type='application/pdf'
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail={"status": "error", "message": str(e)}
+        )
+
 @app.post("/predict-batch")
 async def predict_batch(file: UploadFile = File(...)) -> Dict[str, Any]:
     """
     Accept CSV or XLSX file, run batch predictions for all students, 
     and return the class summary.
+    and return the full results required for the Teacher Dashboard.
     """
     try:
         # Read file contents into memory
@@ -158,6 +203,8 @@ async def predict_batch(file: UploadFile = File(...)) -> Dict[str, Any]:
         return {
             "status": "success",
             "summary": result["summary"],
+            "alerts": result["alerts"],
+            "results": result["results_df"].to_dict(orient="records"),
             "total_students": len(result["results_df"])
         }
     except Exception as e:
