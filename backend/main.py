@@ -199,6 +199,10 @@ async def predict_batch(file: UploadFile = File(...)) -> Dict[str, Any]:
         # Convert to DataFrame and run batch prediction
         raw_df = read_uploaded_file(data_stream)
         result = predict_from_dataframe(raw_df)
+
+        print(f"DEBUG: Alerts type: {type(result['alerts'])}")
+        print(f"DEBUG: Results DF type: {type(result['results_df'])}")
+        print(f"DEBUG: Results Head:\n{result['results_df'].head()}")
         
         return {
             "status": "success",

@@ -186,3 +186,50 @@
 2026-06-18 12:10:34 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
 2026-06-18 12:13:12 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
 2026-06-18 12:13:16 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:15:42 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:15:43 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:16:04 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:16:04 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:17:15 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:17:15 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:17:16 | INFO     | egadget.batch_report | Generating student cards PDF (max 200)
+2026-06-18 12:17:50 | INFO     | egadget.batch_report | Student cards PDF saved -> reports\student_cards_2026-06-18.pdf
+2026-06-18 12:19:10 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:19:10 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:35:15 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:35:15 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:36:28 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:36:28 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:36:28 | INFO     | egadget.batch_report | Generating student cards PDF (max 200)
+2026-06-18 12:37:03 | INFO     | egadget.batch_report | Student cards PDF saved -> reports\student_cards_2026-06-18.pdf
+2026-06-18 12:54:53 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-18 12:54:53 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-18 12:55:05 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-18 12:55:05 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-18 12:55:06 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-18 12:55:16 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-18 12:55:19 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-18.pdf
+2026-06-18 12:55:23 | INFO     | egadget.batch_report | Generating student cards PDF (max 100)
+2026-06-18 12:55:32 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-18.pdf
+2026-06-18 12:55:51 | INFO     | egadget.dashboard | Loading model artifacts
+2026-06-18 12:55:51 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-18 12:55:56 | INFO     | egadget.dashboard | Prediction requested for student: Anonymous
+2026-06-18 12:55:56 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-18 12:55:57 | INFO     | egadget.shap | Generating SHAP waterfall plot -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 12:55:58 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 12:55:58 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=2.4)
+2026-06-18 12:55:58 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
+2026-06-18 13:00:14 | INFO     | egadget.dashboard | Loading model artifacts
+2026-06-18 13:00:14 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-18 13:00:19 | INFO     | egadget.dashboard | Prediction requested for student: Anonymous
+2026-06-18 13:00:20 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-18 13:00:20 | INFO     | egadget.shap | Generating SHAP waterfall plot -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:00:22 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:00:22 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=18.5)
+2026-06-18 13:00:22 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
+2026-06-18 13:01:51 | INFO     | egadget.dashboard | Prediction requested for student: Anonymous
+2026-06-18 13:01:52 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-18 13:01:52 | INFO     | egadget.shap | Generating SHAP waterfall plot -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:01:53 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
+2026-06-18 13:01:53 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=3.0)
+2026-06-18 13:01:53 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
