@@ -315,9 +315,47 @@ elif page == "📤 Upload & Predict":
                 try:
                     logger.info('Batch prediction started for %d rows', len(raw_df))
                     out = predict_from_dataframe(raw_df)
-                    st.session_state.results  = out['results_df']
-                    st.session_state.summary  = out['summary']
-                    st.session_state.alerts   = out['alerts']
+
+                    # Fallbacks for robustness if the API is not reachable
+                    api_json = {"summary": out['summary'], "alerts": out['alerts']}
+                    api_results_df = out['results_df']
+
+                    # Convert raw_df to CSV in memory using io.BytesIO()
+                    csv_buffer = io.BytesIO()
+                    raw_df.to_csv(csv_buffer, index=False)
+                    csv_buffer.seek(0)
+
+                    # Send the file to FastAPI endpoint POST /predict-batch using api_request()
+                    files = {'file': ('batch.csv', csv_buffer, 'text/csv')}
+                    api_out = api_request("POST", "/predict-batch", files=files)
+
+                    # Display success or warning messages depending on the request outcome
+                    if api_out:
+                        st.success("Batch API Connected")
+
+                        api_json = api_out.json()
+                        api_results_df = pd.DataFrame(api_json["results"])
+
+                        st.write("API Data Source: FastAPI /predict-batch")
+                    else:
+                        st.warning("Batch API Not Reachable")
+
+                        st.write("API Data Source: Local predict_from_dataframe fallback")
+
+                    st.session_state.results = api_results_df
+                    st.session_state.summary = api_json["summary"]
+                    st.session_state.alerts = api_json["alerts"]
+
+                    st.info(
+                        f"Teacher Dashboard now using API results: "
+                        f"{len(st.session_state.results)} students"
+                    )
+                    st.write(
+                        "Data Source:",
+                        "FastAPI /predict-batch"
+                        if api_out
+                        else "Local predict_from_dataframe fallback"
+                    )
                     st.session_state.col_map  = out['column_map']
                     st.session_state.raw_df   = raw_df
                     st.session_state.filename = filename
