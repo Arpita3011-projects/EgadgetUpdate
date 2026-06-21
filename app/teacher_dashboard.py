@@ -16,7 +16,11 @@ Run:
 
 # ── stdlib & third-party ──────────────────────────────────────────────────────
 import os, sys, io, datetime, textwrap, re, tempfile
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Optional
+
+import requests
+
+API_BASE_URL = "http://127.0.0.1:8000"
 
 import numpy as np
 import pandas as pd
@@ -25,6 +29,22 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 import streamlit as st
+
+def api_request(method: str, endpoint: str, json=None, files=None):
+    url = f"{API_BASE_URL}{endpoint}"
+    try:
+        response = requests.request(
+            method,
+            url,
+            json=json,
+            files=files,
+            timeout=30
+        )
+        response.raise_for_status()
+        return response
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return None
 
 # ── path wiring ───────────────────────────────────────────────────────────────
 APP_DIR  = os.path.dirname(os.path.abspath(__file__))
