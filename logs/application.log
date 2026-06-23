@@ -239,3 +239,69 @@
 2026-06-18 13:02:11 | INFO     | egadget.shap | SHAP waterfall saved -> E:\EGadgetupdate\src\..\reports\shap_waterfall.png
 2026-06-18 13:02:11 | INFO     | egadget.report | Generating student PDF for Anonymous (risk=Low, score=15.0)
 2026-06-18 13:02:11 | INFO     | egadget.report | Student PDF saved -> E:\EGadgetupdate\src\..\reports\student_2026-06-18_report.pdf
+2026-06-21 09:47:30 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 09:47:31 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 09:48:05 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 09:48:05 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:48:06 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:48:07 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:48:08 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:52:21 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 09:52:22 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 09:52:56 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 09:52:56 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:52:56 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:52:57 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:52:58 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:56:36 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 09:56:36 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 09:57:01 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 09:57:02 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:57:02 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:57:03 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:57:03 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:59:12 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 09:59:12 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 09:59:35 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 09:59:35 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:59:36 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 09:59:37 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 09:59:37 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:02:20 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 10:02:20 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 10:02:56 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 10:02:56 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:02:56 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:02:57 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:02:57 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:05:19 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\models
+2026-06-21 10:05:20 | INFO     | egadget.shap | Creating new SHAP TreeExplainer
+2026-06-21 10:05:58 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 10:05:59 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:05:59 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:06:00 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:06:01 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:06:48 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-21 10:06:49 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-21.png
+2026-06-21 10:06:52 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-21.png
+2026-06-21 10:07:29 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-21 10:07:38 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-21.pdf
+2026-06-21 10:07:42 | INFO     | egadget.batch_report | Generating student cards PDF (max 100)
+2026-06-21 10:08:28 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-21.pdf
+2026-06-21 10:16:56 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 10:16:57 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:16:59 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:17:05 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:17:07 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:24:53 | INFO     | egadget.teacher_dashboard | Batch prediction started for 246 rows
+2026-06-21 10:24:54 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:24:56 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:25:01 | INFO     | egadget.batch_predict | Loading model artifacts from E:\EGadgetupdate\src\..\models
+2026-06-21 10:25:03 | INFO     | egadget.batch_predict | Running batch prediction for 246 students
+2026-06-21 10:25:51 | INFO     | egadget.shap | Computing SHAP values for single prediction
+2026-06-21 10:25:53 | INFO     | egadget.shap | Generating SHAP waterfall plot -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-21.png
+2026-06-21 10:25:59 | INFO     | egadget.shap | SHAP waterfall saved -> C:\Users\arpit\AppData\Local\Temp\shap_waterfall_Neeraj_2026-06-21.png
+2026-06-21 10:26:44 | INFO     | egadget.batch_report | Generating class report PDF (246 students)
+2026-06-21 10:27:02 | INFO     | egadget.batch_report | Class PDF saved -> E:\EGadgetupdate\reports\class_report_2026-06-21.pdf
+2026-06-21 10:27:08 | INFO     | egadget.batch_report | Generating student cards PDF (max 100)
+2026-06-21 10:28:24 | INFO     | egadget.batch_report | Student cards PDF saved -> E:\EGadgetupdate\reports\student_cards_2026-06-21.pdf
